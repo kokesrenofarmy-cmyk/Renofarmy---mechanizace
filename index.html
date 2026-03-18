@@ -410,9 +410,9 @@
     <div class="tabs">
       <button class="tab active" data-tab="machines">Všechny stroje</button>
       <button class="tab" data-tab="overview">Přehled (traktory k řešení)</button>
-      <button class="tab" data-tab="transfers">Návrhy přesunů</button>
       <button class="tab" data-tab="farms">Podniky</button>
       <button class="tab" data-tab="costs">Náklady</button>
+      <button class="tab" data-tab="transfers">Návrhy přesunů</button>
     </div>
 
     <div class="tab-panel active" data-panel="machines">
@@ -636,7 +636,12 @@
       const costPerMth2024 = toNumber(getRowValue(row, ["Náklady Kč/mth 2024"]));
       const costPerMth2025 = toNumber(getRowValue(row, ["Náklady Kč/mth 2025"]));
       const costPerMth = costPerMth2025 || costPerMth2024 || 0;
-      const cost = mth && costPerMth ? Math.round(mth * costPerMth) : 0;
+      // náklady počítáme jen z ročního nájezdu (ne z celé životnosti)
+      const run2025 = toNumber(getRowValue(row, ["Nájezd 2025"]));
+      const run2024 = toNumber(getRowValue(row, ["Nájezd 2024"]));
+      const yearlyRun = run2025 || run2024 || 0;
+
+      const cost = yearlyRun && costPerMth ? Math.round(yearlyRun * costPerMth) : 0;
 
       const baseStatus = getRowValue(row, ["Stav"]);
       const signal = getSignal(mth, costPerMth);
