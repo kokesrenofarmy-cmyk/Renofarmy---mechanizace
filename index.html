@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RenoFarmy Mechanizace</title>
+  <style>
+    :root {
+      --bg: #f7f7f2;
+      --panel: #ffffff;
+      --panel-2: #f3f4ef;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --green: #2f5d34;
+      --green-2: #3f7a45;
+      --green-3: #dce9dd;
+      --border: #d8e4d7;
+      --warn: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f7f7f2 0%, #ffffff 45%, #eef6ee 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--green);
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 8px;
+      max-width: 800px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .button {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--green);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      padding: 18px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .toolbar-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      background: white;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .farm-card {
+      padding: 18px;
+    }
+
+    .farm-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .farm-header h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-item {
+      border: 1px solid #e7ebe4;
+      border-radius: 14px;
+      background: var(--panel-2);
+      padding: 14px;
+    }
+
+    .mini-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .mini-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill-ok { background: #dcfce7; color: #166534; }
+    .pill-watch { background: #fef3c7; color: #92400e; }
+    .pill-danger { background: #fee2e2; color: #991b1b; }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .metric .k {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .metric .v {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .table-panel {
+      padding: 18px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #edf0ea;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    tr.data-row {
+      cursor: pointer;
+    }
+
+    tr.data-row:hover {
+      background: #f7faf6;
+    }
+
+    .detail-row {
+      display: none;
+      background: #f7faf6;
+    }
+
+    .detail-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 16px;
+      padding: 12px 0;
+    }
+
+    .detail-card {
+      background: white;
+      border: 1px solid #e6ece5;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .detail-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--green);
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f4ef;
+      font-size: 14px;
+    }
+
+    .kv:last-child { border-bottom: 0; }
+
+    .raw-grid {
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .notice {
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 14px;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 8px 0;
+    }
+
+    @media (max-width: 1100px) {
+      .stats,
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .toolbar-grid {
+        grid-template-columns: 1fr;
+      }
+      .detail-inner {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">RenoFarmy • interní dashboard mechanizace</div>
+        <h1>RenoFarmy Mechanizace</h1>
+        <div class="subtitle">Statická verze dashboardu pro GitHub Pages nebo jiný jednoduchý hosting. Načítá motorová vozidla z Google Sheets CSV a po rozkliknutí ukáže všechny sloupce z karty stroje.</div>
+      </div>
+      <div class="actions">
+        <a class="button" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vS-aCBZmxEuPMlhw20f0aWrhB8AqgmP92GT4kNtq7McERoCumCz7hRRoPhXksHw-yteXlZr24ct2kPQ/pub?gid=1390483055&single=true&output=csv" target="_blank" rel="noreferrer">Google Sheets CSV</a>
+        <button class="button-primary" id="reloadBtn">Obnovit data</button>
+      </div>
+    </div>
+
+    <div id="notice" class="notice" style="display:none"></div>
+
+    <div class="stats">
+      <div class="panel stat">
+        <div class="label">Celkem strojů</div>
+        <div class="value" id="statTotal">0</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">Kandidáti na prověření</div>
+        <div class="value" id="statReview">0</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">Málo využité</div>
+        <div class="value" id="statLowUse">0</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">Stav načtení</div>
+        <div class="value" id="statLoad">...</div>
+      </div>
+    </div>
+
+    <div class="panel toolbar">
+      <div class="toolbar-grid">
+        <input id="searchInput" placeholder="Hledat stroj, model, značku, farmu nebo e.č. Helios" />
+        <select id="farmFilter"><option value="Všechny">Všechny farmy</option></select>
+        <select id="typeFilter"><option value="Všechny">Všechny typy</option></select>
+      </div>
+    </div>
+
+    <div class="hero-grid" id="heroGrid"></div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="machines">Všechny stroje</button>
+      <button class="tab" data-tab="transfers">Návrhy přesunů</button>
+      <button class="tab" data-tab="farms">Podniky</button>
+      <button class="tab" data-tab="costs">Náklady</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="machines">
+      <div class="panel table-panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Stroj</th>
+                <th>Typ</th>
+                <th>Podnik</th>
+                <th>MTH</th>
+                <th>Rok</th>
+                <th>Kč/MTH</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="machinesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="transfers">
+      <div class="panel table-panel">
+        <div id="transfersList"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="farms">
+      <div class="panel table-panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Podnik</th>
+                <th>Počet strojů</th>
+                <th>Součet MTH</th>
+                <th>Orná půda (ha)</th>
+                <th>MTH / 100 ha</th>
+                <th>Málo využité</th>
+                <th>Signál</th>
+              </tr>
+            </thead>
+            <tbody id="farmsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="costs">
+      <div class="panel table-panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Stroj</th>
+                <th>Podnik</th>
+                <th>MTH</th>
+                <th>Náklady</th>
+                <th>Kč/MTH</th>
+              </tr>
+            </thead>
+            <tbody id="costsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-aCBZmxEuPMlhw20f0aWrhB8AqgmP92GT4kNtq7McERoCumCz7hRRoPhXksHw-yteXlZr24ct2kPQ/pub?gid=1390483055&single=true&output=csv";
+
+    const state = {
+      data: [],
+      filtered: [],
+      expandedId: null,
+      search: "",
+      farm: "Všechny",
+      type: "Všechny"
+    };
+
+    function normalizeKey(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function detectDelimiter(text) {
+      const firstLine = (text.split(/\r?\n/).find((line) => line.trim()) || "");
+      const commaCount = (firstLine.match(/,/g) || []).length;
+      const semicolonCount = (firstLine.match(/;/g) || []).length;
+      return semicolonCount > commaCount ? ";" : ",";
+    }
+
+    function parseDelimitedLine(line, delimiter) {
+      const values = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i += 1) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = !inQuotes;
+          }
+          continue;
+        }
+
+        if (char === delimiter && !inQuotes) {
+          values.push(current.trim());
+          current = "";
+          continue;
+        }
+
+        current += char;
+      }
+
+      values.push(current.trim());
+      return values;
+    }
+
+    function parseCsv(text) {
+      const clean = text.replace(/^\uFEFF/, "");
+      const delimiter = detectDelimiter(clean);
+      const lines = clean.split(/\r?\n/).filter((line) => line.trim());
+      if (!lines.length) return [];
+      const headers = parseDelimitedLine(lines[0], delimiter);
+      return lines.slice(1).map((line) => {
+        const cells = parseDelimitedLine(line, delimiter);
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = cells[index] || "";
+        });
+        return row;
+      });
+    }
+
+    function getRowValue(row, candidates) {
+      const keys = Object.keys(row);
+      for (const candidate of candidates) {
+        const hit = keys.find((key) => normalizeKey(key) === normalizeKey(candidate));
+        if (hit) return row[hit] || "";
+      }
+      for (const candidate of candidates) {
+        const hit = keys.find((key) => normalizeKey(key).includes(normalizeKey(candidate)));
+        if (hit) return row[hit] || "";
+      }
+      return "";
+    }
+
+    function toNumber(value, fallback = 0) {
+      if (!value) return fallback;
+      const normalized = String(value)
+        .replace(/\s/g, "")
+        .replace(/,/g, ".")
+        .replace(/[^0-9.-]/g, "");
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function inferMachineType(row) {
+      const rawType = getRowValue(row, ["typ", "druh", "kategorie", "skupina"]);
+      if (rawType) return rawType;
+      const combined = `${getRowValue(row, ["stroj", "název stroje", "nazev stroje", "model"])} ${getRowValue(row, ["značka", "znacka", "brand", "výrobce", "vyrobce"])}`.toLowerCase();
+      if (combined.includes("traktor") || combined.includes("john deere") || combined.includes("fendt") || combined.includes("case")) return "Traktor";
+      return "Motorové vozidlo";
+    }
+
+    function getSignal(mth, costPerMth) {
+      if (mth > 0 && mth < 200 && costPerMth > 1200) return "Řešit";
+      if ((mth > 0 && mth < 300) || costPerMth > 1000) return "Sledovat";
+      return "OK";
+    }
+
+    function getRecommendation(signal) {
+      if (signal === "Řešit") return "Prověřit přesun / prodej nebo důvod vysokých nákladů";
+      if (signal === "Sledovat") return "Sledovat využití a náklady";
+      return "Beze změny";
+    }
+
+    function signalPill(signal) {
+      if (signal === "Řešit") return `<span class="pill pill-danger">${signal}</span>`;
+      if (signal === "Sledovat") return `<span class="pill pill-watch">${signal}</span>`;
+      return `<span class="pill pill-ok">${signal}</span>`;
+    }
+
+    function mapRowToMachine(row, index) {
+      const machine = getRowValue(row, ["stroj", "název stroje", "nazev stroje", "název", "nazev", "stroj/název"]);
+      const model = getRowValue(row, ["model", "typové označení", "typove oznaceni", "obchodní název", "obchodni nazev"]);
+      const heliosId = getRowValue(row, ["e.č helios", "eč helios", "ec helios", "e. c. helios", "evidenční číslo", "evidencni cislo", "ec", "e.č."]);
+      const farm = getRowValue(row, ["farma", "podnik", "středisko", "stredisko", "provozovna"]);
+      const mth = toNumber(getRowValue(row, ["mth", "motohodiny", "stav mth", "aktuální mth", "aktualni mth"]));
+      const year = toNumber(getRowValue(row, ["rok výroby", "rok vyroby", "rok", "výroba", "vyroba"]));
+      const vin = getRowValue(row, ["vin", "výrobní číslo", "vyrobni cislo", "výrobní číslo/vin"]);
+      const powerHp = toNumber(getRowValue(row, ["výkon", "vykon", "hp", "kw", "jmenovitý výkon", "jmenovity vykon"]));
+      const brand = getRowValue(row, ["značka", "znacka", "brand", "výrobce", "vyrobce"]);
+      const driver = getRowValue(row, ["řidič", "ridic", "obsluha", "odpovědná osoba", "odpovedna osoba"]);
+      const insurance = getRowValue(row, ["pojištění", "pojisteni", "pojišťovna", "pojistovna"]);
+      const serviceNote = getRowValue(row, ["servis", "servisní poznámka", "servisni poznamka", "poznámka servis", "poznamka servis"]);
+      const notes = getRowValue(row, ["poznámka", "poznamka", "poznámky", "poznamky", "komentář", "komentar"]);
+      const cost = toNumber(getRowValue(row, ["náklady", "naklady", "cost", "náklady celkem", "naklady celkem"]));
+      const arableHa = toNumber(getRowValue(row, ["orná půda", "orna puda", "ha", "výměra", "vymera"]));
+      const baseStatus = getRowValue(row, ["status", "stav", "signál", "signal"]);
+      const costPerMth = mth ? Math.round(cost / mth) : 0;
+      const signal = getSignal(mth, costPerMth);
+      return {
+        id: index + 1,
+        machine: machine || model || `Stroj ${index + 1}`,
+        model: model || machine || "-",
+        heliosId: heliosId || `ROW-${index + 1}`,
+        type: inferMachineType(row),
+        farm: farm || "Nezařazeno",
+        mth,
+        cost,
+        year,
+        status: baseStatus || signal,
+        signal,
+        recommendation: getRecommendation(signal),
+        costPerMth,
+        arableHa,
+        vin,
+        powerHp,
+        brand,
+        driver,
+        insurance,
+        serviceNote,
+        notes,
+        raw: row
+      };
+    }
+
+    async function loadData() {
+      setNotice("");
+      document.getElementById("statLoad").textContent = "Načítám";
+      try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error(`Načtení selhalo (${response.status})`);
+        const text = await response.text();
+        const rows = parseCsv(text);
+        state.data = rows.map(mapRowToMachine).filter((item) => item.machine && item.heliosId);
+        applyFilters();
+        document.getElementById("statLoad").textContent = "Hotovo";
+      } catch (error) {
+        state.data = [];
+        applyFilters();
+        document.getElementById("statLoad").textContent = "Chyba";
+        setNotice(`Nepodařilo se načíst data z Google Sheets. ${error instanceof Error ? error.message : error}`);
+      }
+    }
+
+    function setNotice(message) {
+      const el = document.getElementById("notice");
+      if (!message) {
+        el.style.display = "none";
+        el.textContent = "";
+        return;
+      }
+      el.style.display = "block";
+      el.textContent = message;
+    }
+
+    function applyFilters() {
+      state.filtered = state.data.filter((item) => {
+        const haystack = [item.machine, item.model, item.type, item.farm, item.heliosId, item.brand].join(" ").toLowerCase();
+        const matchesSearch = haystack.includes(state.search.toLowerCase());
+        const matchesFarm = state.farm === "Všechny" || item.farm === state.farm;
+        const matchesType = state.type === "Všechny" || item.type === state.type;
+        return matchesSearch && matchesFarm && matchesType;
+      });
+
+      renderStats();
+      renderFilterOptions();
+      renderHero();
+      renderMachines();
+      renderTransfers();
+      renderFarms();
+      renderCosts();
+    }
+
+    function renderStats() {
+      document.getElementById("statTotal").textContent = String(state.data.length);
+      document.getElementById("statReview").textContent = String(state.data.filter((x) => x.signal === "Řešit" || x.signal === "Sledovat").length);
+      document.getElementById("statLowUse").textContent = String(state.data.filter((x) => x.mth > 0 && x.mth < 200).length);
+    }
+
+    function renderFilterOptions() {
+      const farmEl = document.getElementById("farmFilter");
+      const typeEl = document.getElementById("typeFilter");
+      const farmValue = farmEl.value || state.farm;
+      const typeValue = typeEl.value || state.type;
+
+      const farms = ["Všechny", ...Array.from(new Set(state.data.map((item) => item.farm)))];
+      const types = ["Všechny", ...Array.from(new Set(state.data.map((item) => item.type)))];
+
+      farmEl.innerHTML = farms.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+      typeEl.innerHTML = types.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+      farmEl.value = farms.includes(farmValue) ? farmValue : "Všechny";
+      typeEl.value = types.includes(typeValue) ? typeValue : "Všechny";
+    }
+
+    function renderHero() {
+      const hero = document.getElementById("heroGrid");
+      const tractors = state.data.filter((item) => normalizeKey(item.type).includes("traktor") || normalizeKey(item.machine).includes("john deere") || normalizeKey(item.machine).includes("fendt") || normalizeKey(item.machine).includes("case"));
+      const grouped = {};
+      tractors.forEach((item) => {
+        if (!grouped[item.farm]) grouped[item.farm] = [];
+        grouped[item.farm].push(item);
+      });
+
+      const html = Object.entries(grouped).map(([farm, items]) => {
+        const worst = [...items]
+          .sort((a, b) => (b.costPerMth - b.mth) - (a.costPerMth - a.mth))
+          .slice(0, 3);
+
+        return `
+          <div class="panel farm-card">
+            <div class="farm-header">
+              <h3>${escapeHtml(farm)}</h3>
+              <div class="muted">3 traktory k prověření</div>
+            </div>
+            <div class="mini-list">
+              ${worst.length ? worst.map((tractor) => `
+                <div class="mini-item">
+                  <div class="mini-top">
+                    <div>
+                      <div class="mini-name">${escapeHtml(tractor.machine)}</div>
+                      <div class="muted">${escapeHtml(tractor.brand || "-")} • ${escapeHtml(tractor.model || "-")} • e.č. ${escapeHtml(tractor.heliosId)}</div>
+                    </div>
+                    ${signalPill(tractor.signal)}
+                  </div>
+                  <div class="mini-metrics">
+                    <div class="metric"><div class="k">MTH</div><div class="v">${formatValue(tractor.mth)}</div></div>
+                    <div class="metric"><div class="k">Náklady</div><div class="v">${formatNumber(tractor.cost)} Kč</div></div>
+                    <div class="metric"><div class="k">Kč/MTH</div><div class="v">${formatValue(tractor.costPerMth)}</div></div>
+                    <div class="metric"><div class="k">Signál</div><div class="v">${escapeHtml(tractor.signal)}</div></div>
+                  </div>
+                  <div style="margin-top:10px;font-size:14px;color:#374151"><strong>Doporučení:</strong> ${escapeHtml(tractor.recommendation)}</div>
+                </div>
+              `).join("") : `<div class="empty">Žádné traktory k vyhodnocení.</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      hero.innerHTML = html || `<div class="panel farm-card"><div class="empty">Zatím nejsou k dispozici žádná data.</div></div>`;
+    }
+
+    function renderMachines() {
+      const tbody = document.getElementById("machinesTable");
+      tbody.innerHTML = state.filtered.map((item) => `
+        <tr class="data-row" data-id="${item.id}">
+          <td><strong>${escapeHtml(item.machine)}</strong><br><span class="muted">e.č. ${escapeHtml(item.heliosId)}</span></td>
+          <td>${escapeHtml(item.type)}</td>
+          <td>${escapeHtml(item.farm)}</td>
+          <td>${formatValue(item.mth)}</td>
+          <td>${formatValue(item.year)}</td>
+          <td>${item.costPerMth ? formatNumber(item.costPerMth) : "-"}</td>
+          <td>${signalPill(item.status)}</td>
+        </tr>
+        <tr class="detail-row" id="detail-${item.id}">
+          <td colspan="7">
+            <div class="detail-inner">
+              <div class="detail-card">
+                <div class="detail-title">Základní údaje</div>
+                ${renderBasicKv(item)}
+              </div>
+              <div class="detail-card">
+                <div class="detail-title">Všechny sloupce z Google Sheets</div>
+                <div class="raw-grid">
+                  ${Object.entries(item.raw).map(([key, value]) => `
+                    <div class="kv">
+                      <div><strong>${escapeHtml(key)}</strong></div>
+                      <div>${escapeHtml(value || "-")}</div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+
+      tbody.querySelectorAll(".data-row").forEach((row) => {
+        row.addEventListener("click", () => {
+          const id = row.getAttribute("data-id");
+          const detail = document.getElementById(`detail-${id}`);
+          const isOpen = detail.style.display === "table-row";
+          tbody.querySelectorAll(".detail-row").forEach((el) => { el.style.display = "none"; });
+          detail.style.display = isOpen ? "none" : "table-row";
+        });
+      });
+    }
+
+    function renderBasicKv(item) {
+      const pairs = [
+        ["Stroj", item.machine],
+        ["Model", item.model],
+        ["Značka", item.brand],
+        ["e.č. Helios", item.heliosId],
+        ["VIN", item.vin],
+        ["Podnik", item.farm],
+        ["Rok výroby", item.year],
+        ["Výkon", item.powerHp],
+        ["MTH", item.mth],
+        ["Náklady", item.cost ? `${formatNumber(item.cost)} Kč` : "-"],
+        ["Kč/MTH", item.costPerMth || "-"],
+        ["Pojištění", item.insurance],
+        ["Řidič / obsluha", item.driver],
+        ["Servis", item.serviceNote],
+        ["Poznámka", item.notes],
+        ["Signál", item.signal],
+        ["Doporučení", item.recommendation]
+      ];
+      return pairs.map(([k, v]) => `
+        <div class="kv">
+          <div><strong>${escapeHtml(String(k))}</strong></div>
+          <div>${escapeHtml(String(v || "-"))}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderTransfers() {
+      const el = document.getElementById("transfersList");
+      const items = state.data.filter((item) => item.signal === "Řešit" || item.signal === "Sledovat").slice(0, 8);
+      el.innerHTML = items.length ? items.map((item) => `
+        <div class="mini-item" style="margin-bottom:12px">
+          <div class="mini-top">
+            <div>
+              <div class="mini-name">${escapeHtml(item.machine)}</div>
+              <div class="muted">${escapeHtml(item.farm)} • e.č. ${escapeHtml(item.heliosId)}</div>
+            </div>
+            ${signalPill(item.signal)}
+          </div>
+          <div class="mini-metrics">
+            <div class="metric"><div class="k">MTH</div><div class="v">${formatValue(item.mth)}</div></div>
+            <div class="metric"><div class="k">Náklady</div><div class="v">${formatNumber(item.cost)} Kč</div></div>
+            <div class="metric"><div class="k">Kč/MTH</div><div class="v">${formatValue(item.costPerMth)}</div></div>
+            <div class="metric"><div class="k">Status</div><div class="v">${escapeHtml(item.status)}</div></div>
+          </div>
+          <div style="margin-top:10px;font-size:14px;color:#374151"><strong>Doporučení:</strong> ${escapeHtml(item.recommendation)}</div>
+        </div>
+      `).join("") : `<div class="empty">Zatím nejsou žádné návrhy přesunů.</div>`;
+    }
+
+    function renderFarms() {
+      const tbody = document.getElementById("farmsTable");
+      const map = {};
+      state.data.forEach((row) => {
+        if (!map[row.farm]) {
+          map[row.farm] = { farm: row.farm, count: 0, totalMth: 0, lowUse: 0, arableHa: row.arableHa || 0 };
+        }
+        map[row.farm].count += 1;
+        map[row.farm].totalMth += row.mth || 0;
+        map[row.farm].arableHa = Math.max(map[row.farm].arableHa, row.arableHa || 0);
+        if (row.mth > 0 && row.mth < 200) map[row.farm].lowUse += 1;
+      });
+
+      const rows = Object.values(map).sort((a, b) => b.totalMth - a.totalMth).map((row) => {
+        const mthPer100Ha = row.arableHa ? Math.round((row.totalMth / row.arableHa) * 100) : 0;
+        const signal = row.lowUse > 0 ? `<span style="color:${'#b45309'}">Prověřit přebytek</span>` : `<span class="muted">Bez signálu</span>`;
+        return `
+          <tr>
+            <td><strong>${escapeHtml(row.farm)}</strong></td>
+            <td>${row.count}</td>
+            <td>${formatNumber(row.totalMth)}</td>
+            <td>${row.arableHa ? formatNumber(row.arableHa) : '-'}</td>
+            <td>${mthPer100Ha ? formatNumber(mthPer100Ha) : '-'}</td>
+            <td>${row.lowUse}</td>
+            <td>${signal}</td>
+          </tr>
+        `;
+      }).join("");
+
+      tbody.innerHTML = rows || `<tr><td colspan="7" class="empty">Žádná data.</td></tr>`;
+    }
+
+    function renderCosts() {
+      const tbody = document.getElementById("costsTable");
+      const rows = [...state.data]
+        .sort((a, b) => b.costPerMth - a.costPerMth)
+        .slice(0, 10)
+        .map((item) => `
+          <tr>
+            <td><strong>${escapeHtml(item.machine)}</strong></td>
+            <td>${escapeHtml(item.farm)}</td>
+            <td>${formatValue(item.mth)}</td>
+            <td>${item.cost ? `${formatNumber(item.cost)} Kč` : '-'}</td>
+            <td>${item.costPerMth ? formatNumber(item.costPerMth) : '-'}</td>
+          </tr>
+        `).join("");
+      tbody.innerHTML = rows || `<tr><td colspan="5" class="empty">Zatím nejsou žádné náklady.</td></tr>`;
+    }
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString("cs-CZ");
+    }
+
+    function formatValue(value) {
+      return value ? escapeHtml(String(value)) : "-";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function setupTabs() {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+          document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add("active");
+        });
+      });
+    }
+
+    function setupFilters() {
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        state.search = e.target.value || "";
+        applyFilters();
+      });
+      document.getElementById("farmFilter").addEventListener("change", (e) => {
+        state.farm = e.target.value;
+        applyFilters();
+      });
+      document.getElementById("typeFilter").addEventListener("change", (e) => {
+        state.type = e.target.value;
+        applyFilters();
+      });
+      document.getElementById("reloadBtn").addEventListener("click", loadData);
+    }
+
+    setupTabs();
+    setupFilters();
+    loadData();
+  </script>
+</body>
+</html>
