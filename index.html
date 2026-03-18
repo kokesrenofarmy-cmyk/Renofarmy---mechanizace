@@ -893,7 +893,8 @@
           map[row.farm] = { farm: row.farm, count: 0, totalMth: 0, lowUse: 0, arableHa: row.arableHa || 0 };
         }
         map[row.farm].count += 1;
-        map[row.farm].totalMth += row.mth || 0;
+        const yearlyRun = (row.raw && (toNumber(row.raw["Nájezd 2025"]) || toNumber(row.raw["Nájezd 2024"]))) || 0;
+        map[row.farm].totalMth += yearlyRun;
         map[row.farm].arableHa = Math.max(map[row.farm].arableHa, row.arableHa || 0);
         if (row.mth > 0 && row.mth < 200) map[row.farm].lowUse += 1;
       });
