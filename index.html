@@ -608,30 +608,40 @@
     }
 
     function mapRowToMachine(row, index) {
-      const machine = getRowValue(row, ["stroj", "název stroje", "nazev stroje", "název", "nazev", "stroj/název"]);
-      const model = getRowValue(row, ["model", "typové označení", "typove oznaceni", "obchodní název", "obchodni nazev"]);
-      const heliosId = getRowValue(row, ["e.č helios", "eč helios", "ec helios", "e. c. helios", "evidenční číslo", "evidencni cislo", "ec", "e.č."]);
-      const farm = getRowValue(row, ["farma", "podnik", "středisko", "stredisko", "provozovna"]);
-      const mth = toNumber(getRowValue(row, ["mth", "motohodiny", "stav mth", "aktuální mth", "aktualni mth"]));
-      const year = toNumber(getRowValue(row, ["rok výroby", "rok vyroby", "rok", "výroba", "vyroba"]));
-      const vin = getRowValue(row, ["vin", "výrobní číslo", "vyrobni cislo", "výrobní číslo/vin"]);
-      const powerHp = toNumber(getRowValue(row, ["výkon", "vykon", "hp", "kw", "jmenovitý výkon", "jmenovity vykon"]));
-      const brand = getRowValue(row, ["značka", "znacka", "brand", "výrobce", "vyrobce"]);
-      const driver = getRowValue(row, ["řidič", "ridic", "obsluha", "odpovědná osoba", "odpovedna osoba"]);
-      const insurance = getRowValue(row, ["pojištění", "pojisteni", "pojišťovna", "pojistovna"]);
-      const serviceNote = getRowValue(row, ["servis", "servisní poznámka", "servisni poznamka", "poznámka servis", "poznamka servis"]);
-      const notes = getRowValue(row, ["poznámka", "poznamka", "poznámky", "poznamky", "komentář", "komentar"]);
-      const cost = toNumber(getRowValue(row, ["náklady", "naklady", "cost", "náklady celkem", "naklady celkem"]));
-      const arableHa = toNumber(getRowValue(row, ["orná půda", "orna puda", "ha", "výměra", "vymera"]));
-      const baseStatus = getRowValue(row, ["status", "stav", "signál", "signal"]);
-      const costPerMth = mth ? Math.round(cost / mth) : 0;
+      const machine = getRowValue(row, ["Model"]);
+      const model = getRowValue(row, ["Model"]);
+      const heliosId = getRowValue(row, ["Ev.číslo Helios"]);
+      const farm = getRowValue(row, ["Středisko kde jezdí"]);
+
+      const mth2024 = toNumber(getRowValue(row, ["MTH stav k datu 2024", "MTH stav 2024"]));
+      const mth2025 = toNumber(getRowValue(row, ["MTH stav k datu 2025", "MTH stav 2025"]));
+      const mth2026 = toNumber(getRowValue(row, ["MTH stav 2026"]));
+      const mth = mth2026 || mth2025 || mth2024;
+
+      const year = toNumber(getRowValue(row, ["Rok výroby"]));
+      const vin = getRowValue(row, ["VIN"]);
+      const powerHp = toNumber(getRowValue(row, ["PS"]));
+      const brand = getRowValue(row, ["Výrobce"]);
+
+      const driver = getRowValue(row, ["Poznámka obsluhy"]);
+      const insurance = getRowValue(row, ["Strojní pojištění"]);
+      const serviceNote = getRowValue(row, ["Poznámka"]);
+      const notes = getRowValue(row, ["Poznámka", "Poznámka obsluhy"]);
+
+      const costPerMth2024 = toNumber(getRowValue(row, ["Náklady Kč/mth 2024"]));
+      const costPerMth2025 = toNumber(getRowValue(row, ["Náklady Kč/mth 2025"]));
+      const costPerMth = costPerMth2025 || costPerMth2024 || 0;
+      const cost = mth && costPerMth ? Math.round(mth * costPerMth) : 0;
+
+      const baseStatus = getRowValue(row, ["Stav"]);
       const signal = getSignal(mth, costPerMth);
+
       return {
         id: index + 1,
-        machine: machine || model || `Stroj ${index + 1}`,
+        machine: machine || `Stroj ${index + 1}`,
         model: model || machine || "-",
         heliosId: heliosId || `ROW-${index + 1}`,
-        type: inferMachineType(row),
+        type: getRowValue(row, ["Druh vozidel"]) || inferMachineType(row),
         farm: farm || "Nezařazeno",
         mth,
         cost,
@@ -640,7 +650,7 @@
         signal,
         recommendation: getRecommendation(signal),
         costPerMth,
-        arableHa,
+        arableHa: 0,
         vin,
         powerHp,
         brand,
